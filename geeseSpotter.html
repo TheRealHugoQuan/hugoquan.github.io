@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Geese Spotter Game | Hugo Quan</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* --- CORE STYLES (Keep these identical to your main page) --- */
+        :root {
+            --bg-body: #ffffff;
+            --bg-alt: #f4f6f9;
+            --nav-bg: #0a192f;
+            --text-main: #2c3e50;
+            --text-light: #546e7a;
+            --accent: #0056b3;
+            --white: #ffffff;
+            --border: #e1e4e8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; }
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+        ul { list-style: none; }
+
+        /* --- NAVIGATION --- */
+        .nav { background-color: var(--nav-bg); color: var(--white); position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        nav { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; }
+        .logo { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 1.3rem; letter-spacing: 0.5px; }
+        .logo img { height: 45px; width: 45px; border-radius: 50%; border: 2px solid var(--accent); object-fit: cover; }
+        #display { display: flex; gap: 30px; }
+        #display li a { font-size: 0.95rem; font-weight: 500; opacity: 0.9; position: relative; }
+        #display li a:hover { opacity: 1; color: #64ffda; }
+        .contact-btn { background-color: transparent; border: 1px solid #64ffda; color: #64ffda; padding: 8px 20px; border-radius: 4px; font-weight: bold; transition: 0.3s; }
+        .contact-btn:hover { background-color: rgba(100, 255, 218, 0.1); }
+
+        /* --- PROJECT DETAIL SPECIFIC STYLES --- */
+        .project-header { background-color: var(--bg-alt); padding: 60px 20px; text-align: center; border-bottom: 1px solid var(--border); }
+        .project-header h1 { font-size: 2.5rem; color: var(--nav-bg); margin-bottom: 10px; }
+        .project-meta { font-size: 1rem; color: var(--accent); font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; }
+        .back-link { display: inline-block; margin-top: 20px; font-size: 0.9rem; color: var(--text-light); text-decoration: underline; }
+        .back-link:hover { color: var(--accent); }
+
+        .project-container { max-width: 1000px; margin: 50px auto; padding: 0 20px; display: grid; grid-template-columns: 2fr 1fr; gap: 40px; }
+        
+        .main-content h2 { font-size: 1.8rem; color: var(--nav-bg); margin-bottom: 15px; border-bottom: 2px solid var(--border); padding-bottom: 5px; }
+        .main-content p { margin-bottom: 20px; font-size: 1.05rem; color: var(--text-main); }
+        .main-content img { width: 100%; border-radius: 8px; margin: 20px 0; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid var(--border); }
+        
+        .sidebar { background: var(--white); padding: 30px; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.02); align-self: start; }
+        .sidebar h3 { font-size: 1.2rem; color: var(--nav-bg); margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
+        .sidebar ul { margin-bottom: 25px; }
+        .sidebar ul li { margin-bottom: 10px; font-size: 0.95rem; color: var(--text-light); display: flex; align-items: center; gap: 8px; }
+        .sidebar ul li i { color: var(--accent); font-size: 0.8rem; }
+        
+        /* --- FOOTER --- */
+        footer { background-color: var(--nav-bg); color: var(--white); padding: 60px 20px; text-align: center; margin-top: 50px; }
+        .footer-socials { margin: 20px 0; }
+        .footer-socials a { font-size: 1.5rem; margin: 0 15px; color: #8892b0; transition: 0.3s; }
+        .footer-socials a:hover { color: #64ffda; transform: translateY(-3px); }
+
+        @media (max-width: 768px) {
+            .project-container { grid-template-columns: 1fr; }
+        }
+    </style>5
+</head>
+
+<body>
+
+    <section class="nav">
+        <nav>
+            <div class="logo">
+                <img src="assets/HQ.JPG" alt="Hugo"> 
+                <span>Hugo Quan</span>
+            </div>
+            <ul id="display">
+                <li><a href="index copy.html">Home</a></li>
+                <li><a href="index copy.html">Skills</a></li>
+                <li><a href="index copy.html">Hardware Projects</a></li>
+                <li><a href="index copy.html">Software Projects</a></li>
+            </ul>
+            <a href="mailto:h2quan@uwaterloo.ca" class="contact-btn">Contact Me</a>
+        </nav>
+    </section>
+
+    <header class="project-header">
+        <h1>Geese Spotter Game</h1>
+        <div class="project-meta">C++ | Algorithmic Design & Memory Management</div>
+        <a href="index.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to Portfolio</a>
+    </header>
+
+    <div class="project-container">
+        
+        <div class="main-content">
+            <h2>Project Overview</h2>
+            <p>Geese Spotter is a terminal-based strategy game heavily inspired by the classic logic puzzle Minesweeper. The core objective of this project was not just to create a playable game, but to build a robust foundation in fundamental computer science principles using C++. By interacting directly with the command line, I focused entirely on underlying architectural efficiency rather than graphical overhead, demonstrating a strong grasp of raw memory manipulation and algorithmic logic.</p>
+            
+            <img src="assets/geeseSpotter.png" alt="Geese Spotter Terminal Output" onerror="this.src='https://via.placeholder.com/800x400?text=Geese+Spotter+Console+Interface'">
+
+            <h2>Architecture & Design</h2>
+            <p>A major design constraint of this project was representing a two-dimensional game board in memory efficiently. Instead of using a standard library container like <code>std::vector</code> or a 2D array, I implemented the board using a dynamically allocated 1D array accessed via raw pointers. This ensures contiguous memory allocation, which is highly cache-friendly and faster for the CPU to process.</p>
+
+            
+            
+            <p>To access a specific (X, Y) coordinate on the board, I utilized pointer arithmetic to calculate the exact index in the 1D array: <code>Index = Y * Width + X</code>. This mathematical mapping is a crucial concept in low-level graphics and embedded system displays.</p>
+
+            <p>To further optimize memory, I used <strong>bitwise operations</strong> to track the state of each tile. A single integer per tile was used to store multiple Boolean states (e.g., Does it contain a goose? Is it revealed? Is it flagged?) by setting and checking specific bits using bitwise AND (<code>&</code>), OR (<code>|</code>), and XOR (<code>^</code>) operators. This drastically reduced the memory footprint of the game board.</p>
+
+            <h2>Challenges & Solutions</h2>
+            <p><strong>Challenge: Implementing the "Zero-Cascade" Reveal Algorithm.</strong> 
+            In Minesweeper, clicking a tile with zero neighboring hazards automatically reveals all adjacent safe tiles, which can in turn reveal more tiles. Implementing this cascading effect efficiently without crashing the program via stack overflow was a significant algorithmic challenge.</p>
+            
+            <p><strong>Solution: Recursive Depth-First Search (DFS).</strong> 
+            I implemented a Depth-First Search algorithm to handle the cascade. When a zero-hazard tile is revealed, the function recursively calls itself on all 8 surrounding neighbors. To prevent infinite loops and stack overflows, I added strict base cases: the algorithm halts if a neighbor is out of bounds, already revealed, or contains a goose. This guaranteed O(N) time complexity where N is the number of safe tiles connected to the origin.</p>
+
+            <p><strong>Challenge: Strict Memory Leak Prevention.</strong> 
+            Because the board was dynamically allocated using the <code>new</code> keyword, restarting the game or exiting the program required explicit memory cleanup.</p>
+            
+            <p><strong>Solution:</strong> 
+            I developed robust teardown functions ensuring the <code>delete[]</code> operator was reliably called under all exit conditions. I utilized Valgrind/GDB during the debugging process to verify that zero memory leaks occurred over thousands of game iterations.</p>
+        </div>
+
+        <div class="sidebar">
+            <h3>Technologies Used</h3>
+            <ul>
+                <li><i class="fa-solid fa-check"></i> C++ (Standard ISO)</li>
+                <li><i class="fa-solid fa-check"></i> GCC/G++ Compiler</li>
+                <li><i class="fa-solid fa-check"></i> GDB / Memory Profiling</li>
+                <li><i class="fa-solid fa-check"></i> Terminal / CLI Environment</li>
+            </ul>
+
+            <h3>Core Concepts</h3>
+            <ul>
+                <li><i class="fa-solid fa-memory"></i> Dynamic Memory (Pointers)</li>
+                <li><i class="fa-solid fa-microchip"></i> Bitwise Operations</li>
+                <li><i class="fa-solid fa-network-wired"></i> Depth-First Search (DFS)</li>
+                <li><i class="fa-solid fa-table-cells"></i> 1D to 2D Array Mapping</li>
+            </ul>
+
+            <h3>Repository</h3>
+            <a href="https://github.com/TheRealHugoQuan" target="_blank" style="color: var(--accent); font-weight: bold; text-decoration: underline;">View Source Code <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+        </div>
+    </div>
+
+    <footer>
+        <div class="logo" style="justify-content: center; margin-bottom: 20px;">
+            <span>Hugo Quan</span>
+        </div>
+        <div class="footer-socials">
+            <a href="https://github.com/TheRealHugoQuan"><i class="fa-brands fa-github"></i></a>
+            <a href="https://www.linkedin.com/in/hugoquan21015604/"><i class="fa-brands fa-linkedin"></i></a>
+            <a href="mailto:h2quan@uwaterloo.ca"><i class="fa-solid fa-envelope"></i></a>
+        </div>
+        <p>&copy; 2026 Hugo Quan. Designed for Engineering Excellence.</p>
+    </footer>
+
+</body>
+</html>
