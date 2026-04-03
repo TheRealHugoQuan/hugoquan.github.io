@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Custom Team Hardware | Hugo Quan</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+     <style>
+        /* --- CORE STYLES (Keep these identical to your main page) --- */
+        :root {
+            --bg-body: #ffffff;
+            --bg-alt: #f4f6f9;
+            --nav-bg: #0a192f;
+            --text-main: #2c3e50;
+            --text-light: #546e7a;
+            --accent: #0056b3;
+            --white: #ffffff;
+            --border: #e1e4e8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; }
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+        ul { list-style: none; }
+
+        /* --- NAVIGATION --- */
+        .nav { background-color: var(--nav-bg); color: var(--white); position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        nav { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; }
+        .logo { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 1.3rem; letter-spacing: 0.5px; }
+        .logo img { height: 45px; width: 45px; border-radius: 50%; border: 2px solid var(--accent); object-fit: cover; }
+        #display { display: flex; gap: 30px; }
+        #display li a { font-size: 0.95rem; font-weight: 500; opacity: 0.9; position: relative; }
+        #display li a:hover { opacity: 1; color: #64ffda; }
+        .contact-btn { background-color: transparent; border: 1px solid #64ffda; color: #64ffda; padding: 8px 20px; border-radius: 4px; font-weight: bold; transition: 0.3s; }
+        .contact-btn:hover { background-color: rgba(100, 255, 218, 0.1); }
+
+        /* --- PROJECT DETAIL SPECIFIC STYLES --- */
+        .project-header { background-color: var(--bg-alt); padding: 60px 20px; text-align: center; border-bottom: 1px solid var(--border); }
+        .project-header h1 { font-size: 2.5rem; color: var(--nav-bg); margin-bottom: 10px; }
+        .project-meta { font-size: 1rem; color: var(--accent); font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; }
+        .back-link { display: inline-block; margin-top: 20px; font-size: 0.9rem; color: var(--text-light); text-decoration: underline; }
+        .back-link:hover { color: var(--accent); }
+
+        .project-container { max-width: 1000px; margin: 50px auto; padding: 0 20px; display: grid; grid-template-columns: 2fr 1fr; gap: 40px; }
+        
+        .main-content h2 { font-size: 1.8rem; color: var(--nav-bg); margin-bottom: 15px; border-bottom: 2px solid var(--border); padding-bottom: 5px; }
+        .main-content p { margin-bottom: 20px; font-size: 1.05rem; color: var(--text-main); }
+        .main-content img { width: 100%; border-radius: 8px; margin: 20px 0; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid var(--border); }
+        
+        .sidebar { background: var(--white); padding: 30px; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.02); align-self: start; }
+        .sidebar h3 { font-size: 1.2rem; color: var(--nav-bg); margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
+        .sidebar ul { margin-bottom: 25px; }
+        .sidebar ul li { margin-bottom: 10px; font-size: 0.95rem; color: var(--text-light); display: flex; align-items: center; gap: 8px; }
+        .sidebar ul li i { color: var(--accent); font-size: 0.8rem; }
+        
+        /* --- FOOTER --- */
+        footer { background-color: var(--nav-bg); color: var(--white); padding: 60px 20px; text-align: center; margin-top: 50px; }
+        .footer-socials { margin: 20px 0; }
+        .footer-socials a { font-size: 1.5rem; margin: 0 15px; color: #8892b0; transition: 0.3s; }
+        .footer-socials a:hover { color: #64ffda; transform: translateY(-3px); }
+
+        @media (max-width: 768px) {
+            .project-container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+
+<body>
+    <section class="nav">
+        <nav>
+            <div class="logo">
+                <img src="assets/HQ.JPG" alt="Hugo"> 
+                <span>Hugo Quan</span>
+            </div>
+            <ul id="display">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="index.html#skills">Skills</a></li>
+                <li><a href="index.html#hardware">Hardware Projects</a></li>
+                <li><a href="index.html#software">Software Projects</a></li>
+            </ul>
+            <a href="mailto:h2quan@uwaterloo.ca" class="contact-btn">Contact Me</a>
+        </nav>
+    </section>
+
+    <header class="project-header">
+        <h1>Custom Team Hardware: USB Hub & LDO Power</h1>
+        <div class="project-meta">Day-to-Day Team Efficiency | High-Speed Digital & Analog Power</div>
+        <a href="index.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to Portfolio</a>
+    </header>
+
+    <div class="project-container">
+        <div class="main-content">
+            <h2>Project Overview</h2>
+            <p>This portfolio piece highlights two custom printed circuit boards designed to improve the day-to-day workflow and testing capabilities of our engineering team. While they serve different purposes, both boards required a strict understanding of electrical fundamentals: one focused on advanced digital signal integrity at gigahertz frequencies, and the other on providing simple, ultra-clean analog power.</p>
+
+            <hr style="border: 0; border-top: 2px dashed var(--border); margin: 40px 0;">
+
+            <h2>Part 1: High-Speed USB 3.0 Hub</h2>
+            <p>Standard off-the-shelf hubs often fail under heavy industrial use or lack specific mounting configurations. I designed a custom 4-port USB 3.0 hub to handle 5 Gbps (Gigabits per second) SuperSpeed data transmission reliably in a demanding team environment.</p>
+            
+            <img src="assets/usb-hub.png" alt="USB 3.0 Hub PCB Layout" onerror="this.src='https://via.placeholder.com/800x400?text=USB+3.0+Hub+PCB+Layout'">
+
+            <h3>High-Speed Signal Integrity & Transmission Lines</h3>
+            <p>Designing for USB 3.0 is fundamentally different from lower-speed protocols. At 5 Gbps, copper traces no longer act as simple wires; they act as <strong>transmission lines</strong>. Any change in the physical geometry of the trace (width, distance to the ground plane, or sharp corners) causes a change in impedance. This impedance mismatch causes the high-speed data signal to reflect back toward the source, which degrades the "eye diagram" and causes bit errors.</p>
+            
+            
+
+            <p>To ensure pristine signal integrity, I implemented the following layout constraints:</p>
+            <ul>
+                <li><strong>90-Ohm Differential Routing:</strong> USB 3.0 uses differential pairs (SSTX+/SSTX- and SSRX+/SSRX-). I calculated the exact trace width and spacing to achieve a strict $90\Omega$ differential impedance across the board.</li>
+                <li><strong>Phase Skew & Length Matching:</strong> The positive and negative signals of a differential pair must arrive at the receiver at the exact same picosecond. Where traces had to navigate corners, the outer trace naturally became longer. I utilized CAD tools to add "serpentine" tuning bumps to the shorter trace, equalizing their physical lengths to within fractions of a millimeter.</li>
+                <li><strong>Continuous Return Paths:</strong> High-frequency return currents follow the path of least inductance, which is directly underneath the signal trace. I designed a 4-layer stackup ensuring a solid, unbroken ground plane existed immediately beneath all SuperSpeed traces to prevent EMI radiation and cross-talk.</li>
+            </ul>
+
+            <h3>Key Takeaways & Skills Gained</h3>
+            <p>This project was a deep dive into high-frequency hardware design, bridging the gap between theoretical physics and practical PCB layout. Specifically, I gained:</p>
+            <ul>
+                <li><strong>Component Selection for High-Speed:</strong> Learned how to select ESD protection diodes with ultra-low parasitic capacitance (e.g., $< 0.5\text{pF}$). Standard ESD diodes would act as low-pass filters and accidentally shunt the 5 GHz data signals to ground.</li>
+                <li><strong>PCB Stackup Design:</strong> Mastered the configuration of 4-layer boards (Signal - Ground - Power - Signal) to control dielectric thickness and ensure solid reference planes for controlled impedance routing.</li>
+                <li><strong>Via Optimization:</strong> Learned to minimize via usage on SuperSpeed lines. When vias were strictly necessary, I learned to place adjacent ground return vias to allow the return current to transition layers alongside the signal.</li>
+            </ul>
+
+            <hr style="border: 0; border-top: 2px dashed var(--border); margin: 40px 0;">
+
+            <h2>Part 2: 5V to 3.3V LDO Power Board</h2>
+            <p>To support sensitive analog and sensor bench testing, the team needed a reliable, ultra-clean $3.3\text{V}$ power source. While switching power supplies (buck converters) are highly efficient at stepping down voltage, they generate high-frequency switching noise (ripple) that can easily corrupt microvolt-level sensor readings.</p>
+            
+            
+
+            <p>I designed a simple, dedicated breakout board using a Low-Dropout (LDO) linear regulator to step down a standard $5\text{V}$ USB input to $3.3\text{V}$. Because an LDO uses an internal linear pass transistor instead of high-frequency switching, it provides an exceptionally flat DC voltage with a high Power Supply Rejection Ratio (PSRR).</p>
+            <img src="assets/LDOSchematics.png">
+            <img src="assets/LDOPCB.png">
+            <img src="assets/LDO3D.png">
+            <p>While linear regulators burn off excess voltage as heat, the power dissipation here is highly manageable for day-to-day use. The dissipated power is calculated as $P_{dissipated} = (V_{in} - V_{out}) \times I_{load}$. With a $5\text{V}$ input and $3.3\text{V}$ output, the voltage drop is only $1.7\text{V}$. Even at a $500\text{mA}$ draw, the chip only dissipates $0.85\text{W}$ of heat, which is easily managed by a small copper pour connected to the ground tab on the PCB.</p>
+        </div>
+
+        <div class="sidebar">
+            <h3>Technologies Used</h3>
+            <ul>
+                <li><i class="fa-solid fa-check"></i> KiCad / Altium Designer</li>
+                <li><i class="fa-solid fa-check"></i> Impedance Calculators</li>
+                <li><i class="fa-solid fa-check"></i> USB 3.0 Hub Controller IC</li>
+                <li><i class="fa-solid fa-check"></i> Linear Regulator ICs</li>
+            </ul>
+
+            <h3>Core Concepts</h3>
+            <ul>
+                <li><i class="fa-solid fa-wave-square"></i> $90\Omega$ Differential Routing</li>
+                <li><i class="fa-solid fa-ruler-combined"></i> Serpentine Length Matching</li>
+                <li><i class="fa-solid fa-layer-group"></i> 4-Layer Controlled Impedance</li>
+                <li><i class="fa-solid fa-shield-halved"></i> Ultra-Low Capacitance ESD</li>
+                <li><i class="fa-solid fa-bolt"></i> Low-Noise DC Power (LDO)</li>
+            </ul>
+        </div>
+    </div>
+
+    <footer>
+        <div class="logo" style="justify-content: center; margin-bottom: 20px;">
+            <span>Hugo Quan</span>
+        </div>
+        <div class="footer-socials">
+            <a href="https://github.com/TheRealHugoQuan"><i class="fa-brands fa-github"></i></a>
+            <a href="https://www.linkedin.com/in/hugoquan21015604/"><i class="fa-brands fa-linkedin"></i></a>
+            <a href="mailto:h2quan@uwaterloo.ca"><i class="fa-solid fa-envelope"></i></a>
+        </div>
+        <p>&copy; 2026 Hugo Quan. Designed for Engineering Excellence.</p>
+    </footer>
+</body>
+</html>

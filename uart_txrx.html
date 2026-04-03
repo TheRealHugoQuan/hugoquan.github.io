@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>FPGA-Based ELM Accelerator | Hugo Quan</title>
+    <title>UART Handshake Controller | Hugo Quan</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    
+    <link rel="stylesheet" href="style.css">
     <style>
-        /* --- CORE STYLES (Keep these identical to your main page) --- */
+        /* --- CORE STYLES --- */
         :root {
             --bg-body: #ffffff;
             --bg-alt: #f4f6f9;
@@ -48,6 +48,8 @@
         .main-content p { margin-bottom: 20px; font-size: 1.05rem; color: var(--text-main); }
         .main-content img { width: 100%; border-radius: 8px; margin: 20px 0; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid var(--border); }
         
+        .code-snippet { background: #1e1e1e; color: #d4d4d4; padding: 20px; border-radius: 8px; font-family: 'Consolas', monospace; overflow-x: auto; margin-bottom: 20px; font-size: 0.9rem; }
+
         .sidebar { background: var(--white); padding: 30px; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.02); align-self: start; }
         .sidebar h3 { font-size: 1.2rem; color: var(--nav-bg); margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
         .sidebar ul { margin-bottom: 25px; }
@@ -76,17 +78,17 @@
             </div>
             <ul id="display">
                 <li><a href="index.html">Home</a></li>
-                <li><a href="index.html">Skills</a></li>
-                <li><a href="index.html">Hardware Projects</a></li>
-                <li><a href="index.html">Software Projects</a></li>
+                <li><a href="index.html#skills">Skills</a></li>
+                <li><a href="index.html#hardware">Hardware Projects</a></li>
+                <li><a href="index.html#software">Software Projects</a></li>
             </ul>
             <a href="mailto:h2quan@uwaterloo.ca" class="contact-btn">Contact Me</a>
         </nav>
     </section>
 
     <header class="project-header">
-        <h1>FPGA-Based ELM Accelerator</h1>
-        <div class="project-meta">Personal Project | Verilog & Python</div>
+        <h1>FPGA UART Handshake Controller</h1>
+        <div class="project-meta">Digital Systems | Verilog | Hardware Verification</div>
         <a href="index.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to Portfolio</a>
     </header>
 
@@ -94,45 +96,57 @@
         
         <div class="main-content">
             <h2>Project Overview</h2>
-            <p>FPGA based accelerator trained on an extreme learning machine model, 
-                allowing real time online and offline analysis of real data for medical purposes.
-            </p>
-            <h2>Architecture & Design</h2>
-            <p>
-                Extreme Learning Machine is a type of feedforward Neural Network and its advantage is that only the output weights are required to be calculated
-                while the input weights of the neurons are being randomly assigned. The structure consists of an input layer, one hidden layer and an
-                output layer. 
-            </p>
-            <img src="assets/ELMBaseStructure.png" alt="FPGA Block Diagram Schematic">
-
-            <h2>Challenges & Solutions</h2>
-            <p><strong>Challenge: QR Decomposition for Parallel Calculation.</strong> 
-                Explain the difficulties in implementing Givens Rotation in hardware. 
-                How did you handle floating-point or fixed-point arithmetic? 
+            <p>I engineered a high-precision UART (Universal Asynchronous Receiver-Transmitter) module in Verilog, designed for reliable serial communication between an FPGA and external peripherals. Unlike standard timer-based transmitters, this project implements a professional <strong>Event-Driven Handshake Protocol</strong>, allowing for asynchronous data transfer controlled by a central CPU or state machine.</p>
             
-            </p>
-            <p><strong>Solution:</strong> Describe your approach. Mention any specific Vivado IP blocks used or custom RTL written to overcome this hurdle.</p>
+            <img src="assets/uartWaveform.png" alt="Vivado Waveform Analysis" onerror="this.src='https://via.placeholder.com/800x400?text=Vivado+Waveform+Analysis'">
+
+            <h2>Handshake Architecture</h2>
+            <p>The core of this module is the <code>Send_Go</code> and <code>Tx_Done</code> handshake mechanism. To prevent data corruption, the system utilizes a <strong>snapshot latch</strong>; the moment <code>Send_Go</code> is pulsed, the 8-bit parallel data is captured into an internal register. This allows the master system to immediately process new data without interfering with the active serial transmission.</p>
+            
+            <p>I calculated the baud metronome to operate at <strong>9600 Baud</strong> on a 50MHz master clock, requiring exactly 5208 clock ticks per bit. The module ensures deterministic timing by using a continuous-assignment monitoring wire to reset the enable-switch the exact nanosecond the stop bit finishes.</p>
+
+            <h2>Technical Logic</h2>
+            <div class="code-snippet">
+                // Logic Snapshot: Handshake Control<br>
+                assign w_Tx_Done = ((bit_cnt == 9) && (baud_div_cnt == MCNT_BAUD));<br><br>
+                always@(posedge Clk) begin<br>
+                &nbsp;&nbsp;if(Send_Go) en_baud_cnt <= 1;<br>
+                &nbsp;&nbsp;else if(w_Tx_Done) en_baud_cnt <= 0;<br>
+                end
+            </div>
+
+            <h2>Verification & Simulation</h2>
+            <p><strong>Challenge: Simulation Time Scaling.</strong> Real-time UART simulation at 9600 baud requires millions of nanoseconds to observe a single frame. This makes standard behavioral simulation inefficient for rapid debugging.</p>
+            
+            <p><strong>Solution: Parameter Overrides (defparam).</strong> I utilized Vivado's <code>defparam</code> command in the testbench to "shrink" the time scale. By overriding the baud metronome to count only 5 cycles per bit instead of 5208, I was able to verify the entire 10-bit frame, including the Start bit (Logic 0) and Stop bit (Logic 1), within a standard nanosecond simulation window.</p>
+            
+            <img src="assets/uart_testbench.png" alt="Verilog Simulation Snapshot" onerror="this.src='https://via.placeholder.com/800x400?text=Verilog+Simulation+Snapshot'">
+            <img src="assets/uart_implementation.png" alt="Verilog Implementation Snapshot" onerror="this.src='https://via.placeholder.com/800x400?text=Verilog+Implementation+Snapshot'">
+
+            <h2>Key Engineering Achievements</h2>
+            <ul>
+                <li><strong>Hardware Agnostic:</strong> Parametrized clock frequency and baud rate for easy migration between Xilinx and Altera platforms.</li>
+                <li><strong>LSB First:</strong> Correct implementation of RS-232 bit ordering for compatibility with standard PC terminal software.</li>
+                <li><strong>Deterministic Resets:</strong> Implemented asynchronous resets across all sequential blocks to ensure a safe power-up state.</li>
+            </ul>
         </div>
 
         <div class="sidebar">
             <h3>Technologies Used</h3>
             <ul>
-                <li><i class="fa-solid fa-check"></i> Verilog / SystemVerilog</li>
+                <li><i class="fa-solid fa-check"></i> Verilog HDL</li>
                 <li><i class="fa-solid fa-check"></i> Xilinx Vivado</li>
-                <li><i class="fa-solid fa-check"></i> Python</li>
-                <li><i class="fa-solid fa-check"></i> ARM-Cortex Control</li>
+                <li><i class="fa-solid fa-check"></i> Behavioral Simulation</li>
+                <li><i class="fa-solid fa-check"></i> Handshake Protocols</li>
             </ul>
 
-            <h3>Core Concepts</h3>
+            <h3>Core Features</h3>
             <ul>
-                <li><i class="fa-solid fa-microchip"></i> HW/SW Co-design</li>
-                <li><i class="fa-solid fa-memory"></i> DMA Control</li>
-                <li><i class="fa-solid fa-wave-square"></i> AXI Stream Protocol</li>
-                <li><i class="fa-solid fa-calculator"></i> Matrix Computations</li>
+                <li><i class="fa-solid fa-bolt"></i> 9600 Baud Metronome</li>
+                <li><i class="fa-solid fa-handshake"></i> Asynchronous Send_Go</li>
+                <li><i class="fa-solid fa-check-double"></i> Tx_Done Feedback</li>
+                <li><i class="fa-solid fa-microchip"></i> Data Latching</li>
             </ul>
-
-            <h3>Repository</h3>
-            <a href="https://github.com/TheRealHugoQuan" target="_blank" style="color: var(--accent); font-weight: bold; text-decoration: underline;">View Source Code <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
         </div>
     </div>
 
