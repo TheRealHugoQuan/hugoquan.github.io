@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Chess Clock FSM | Hugo Quan</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        :root {
+            --bg-body: #ffffff;
+            --bg-alt: #f4f6f9;
+            --nav-bg: #0a192f;
+            --text-main: #2c3e50;
+            --text-light: #546e7a;
+            --accent: #0056b3;
+            --white: #ffffff;
+            --border: #e1e4e8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; }
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+        ul { list-style: none; }
+
+        .nav { background-color: var(--nav-bg); color: var(--white); position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        nav { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; }
+        .logo { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 1.3rem; letter-spacing: 0.5px; }
+        .logo img { height: 45px; width: 45px; border-radius: 50%; border: 2px solid var(--accent); object-fit: cover; }
+        #display { display: flex; gap: 30px; }
+        #display li a { font-size: 0.95rem; font-weight: 500; opacity: 0.9; }
+        #display li a:hover { opacity: 1; color: #64ffda; }
+        .contact-btn { background-color: transparent; border: 1px solid #64ffda; color: #64ffda; padding: 8px 20px; border-radius: 4px; font-weight: bold; transition: 0.3s; }
+        .contact-btn:hover { background-color: rgba(100,255,218,0.1); }
+
+        .project-header { background-color: var(--bg-alt); padding: 60px 20px; text-align: center; border-bottom: 1px solid var(--border); }
+        .project-header h1 { font-size: 2.5rem; color: var(--nav-bg); margin-bottom: 10px; }
+        .project-meta { font-size: 1rem; color: var(--accent); font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; }
+        .back-link { display: inline-block; margin-top: 20px; font-size: 0.9rem; color: var(--text-light); text-decoration: underline; }
+        .back-link:hover { color: var(--accent); }
+
+        .project-container { max-width: 1000px; margin: 50px auto; padding: 0 20px; display: grid; grid-template-columns: 2fr 1fr; gap: 40px; }
+
+        .main-content h2 { font-size: 1.8rem; color: var(--nav-bg); margin-top: 40px; margin-bottom: 15px; border-bottom: 2px solid var(--border); padding-bottom: 5px; }
+        .main-content h2:first-child { margin-top: 0; }
+        .main-content h3 { font-size: 1.2rem; color: var(--nav-bg); margin-top: 24px; margin-bottom: 10px; }
+        .main-content p { margin-bottom: 16px; font-size: 1.05rem; color: var(--text-main); text-align: justify; }
+        .main-content img { width: 100%; border-radius: 8px; margin: 20px 0; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid var(--border); }
+
+        .code-snippet { background: #1e1e1e; color: #d4d4d4; padding: 20px; border-radius: 8px; font-family: 'Consolas', monospace; overflow-x: auto; margin-bottom: 20px; font-size: 0.88rem; line-height: 1.6; border-left: 4px solid #64ffda; }
+        .code-snippet .kw { color: #569cd6; }
+        .code-snippet .cm { color: #6a9955; }
+        .code-snippet .str { color: #ce9178; }
+        .code-snippet .num { color: #b5cea8; }
+        .code-snippet .sig { color: #9cdcfe; }
+        .code-snippet .type { color: #4ec9b0; }
+
+        .sidebar { background: var(--white); padding: 30px; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.02); align-self: start; position: sticky; top: 100px; }
+        .sidebar h3 { font-size: 1.2rem; color: var(--nav-bg); margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
+        .sidebar ul { margin-bottom: 25px; }
+        .sidebar ul li { margin-bottom: 10px; font-size: 0.95rem; color: var(--text-light); display: flex; align-items: center; gap: 8px; }
+        .sidebar ul li i { color: var(--accent); font-size: 0.8rem; }
+
+        /* Problem/Solution cards */
+        .ps-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+        .ps-card { border-radius: 8px; padding: 18px; border: 1px solid var(--border); }
+        .ps-card.problem { background: #fff5f5; border-color: #feb2b2; }
+        .ps-card.solution { background: #f0fff4; border-color: #9ae6b4; }
+        .ps-card h4 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+        .ps-card.problem h4 { color: #c53030; }
+        .ps-card.solution h4 { color: #276749; }
+        .ps-card p { font-size: 0.92rem; margin: 0; color: var(--text-main); text-align: left; }
+
+        /* Result banner */
+        .result-banner { background: linear-gradient(135deg, #0a192f 0%, #1a365d 100%); border-radius: 12px; padding: 28px 32px; margin: 32px 0; display: flex; align-items: center; gap: 24px; }
+        .result-banner .icon { font-size: 2.5rem; }
+        .result-banner h3 { color: #64ffda; font-size: 1.3rem; margin-bottom: 6px; }
+        .result-banner p { color: #8892b0; font-size: 0.95rem; margin: 0; }
+
+        /* Architecture Diagram */
+        .arch-diagram { background: var(--nav-bg); border-radius: 12px; padding: 30px 20px; margin: 24px 0; font-family: 'Consolas', monospace; font-size: 0.82rem; color: #8892b0; line-height: 1.9; overflow-x: auto; }
+        .arch-diagram .hl { color: #64ffda; font-weight: bold; }
+        .arch-diagram .dim { color: #4a5568; }
+        .arch-diagram .arrow { color: #f6c90e; }
+
+        /* FSM state diagram */
+        .fsm-diagram { background: var(--bg-alt); border-radius: 12px; padding: 30px; margin: 24px 0; border: 1px solid var(--border); text-align: center; }
+        .fsm-states { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin: 20px 0; }
+        .fsm-state { border-radius: 50%; width: 120px; height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; transition: 0.3s; }
+        .fsm-state.idle { background: #e8f5e9; color: #1b5e20; border: 3px solid #66bb6a; }
+        .fsm-state.p1 { background: #e3f2fd; color: #0d47a1; border: 3px solid #42a5f5; }
+        .fsm-state.p2 { background: #fce4ec; color: #880e4f; border: 3px solid #ef5350; }
+        .fsm-state.over { background: #263238; color: #ef5350; border: 3px solid #ef5350; }
+        .fsm-state small { font-weight: 400; font-size: 0.72rem; margin-top: 4px; opacity: 0.8; }
+        .fsm-transitions { font-size: 0.85rem; color: var(--text-light); margin-top: 16px; line-height: 1.8; }
+        .fsm-transitions code { background: #e8eaf6; padding: 2px 6px; border-radius: 3px; font-size: 0.82rem; }
+
+        /* Timing diagram */
+        .timing-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.88rem; font-family: 'Consolas', monospace; }
+        .timing-table th { background: var(--nav-bg); color: #64ffda; padding: 8px 12px; text-align: center; font-size: 0.8rem; }
+        .timing-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); text-align: center; font-size: 0.82rem; }
+        .timing-table tr:nth-child(even) { background: var(--bg-alt); }
+        .timing-table .hi { color: #2e7d32; font-weight: bold; }
+        .timing-table .lo { color: #c62828; font-weight: bold; }
+        .timing-table .change { background: #fff8e1; }
+
+        /* Layer table */
+        .layer-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.95rem; }
+        .layer-table th { background: var(--nav-bg); color: white; padding: 10px 14px; text-align: left; }
+        .layer-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+        .layer-table tr:nth-child(even) { background: var(--bg-alt); }
+        .layer-table td:first-child { font-weight: 600; color: var(--accent); white-space: nowrap; }
+
+        /* Interview Q&A */
+        .qa-item { border-left: 3px solid var(--accent); padding: 12px 16px; margin-bottom: 14px; background: var(--bg-alt); border-radius: 0 8px 8px 0; }
+        .qa-item .q { font-weight: 600; color: var(--nav-bg); margin-bottom: 6px; font-size: 0.95rem; }
+        .qa-item .a { font-size: 0.93rem; color: var(--text-light); }
+
+        footer { background-color: var(--nav-bg); color: var(--white); padding: 60px 20px; text-align: center; margin-top: 50px; }
+        .footer-socials { margin: 20px 0; }
+        .footer-socials a { font-size: 1.5rem; margin: 0 15px; color: #8892b0; transition: 0.3s; }
+        .footer-socials a:hover { color: #64ffda; }
+
+        @media (max-width: 768px) {
+            .project-container { grid-template-columns: 1fr; }
+            .ps-grid { grid-template-columns: 1fr; }
+            .fsm-states { gap: 12px; }
+            .fsm-state { width: 100px; height: 100px; font-size: 0.78rem; }
+        }
+    </style>
+</head>
+<body>
+
+<section class="nav">
+    <nav>
+        <div class="logo">
+            <img src="assets/HQ.JPG" alt="Hugo Quan" onerror="this.src='https://via.placeholder.com/45?text=HQ'">
+            <span>Hugo Quan</span>
+        </div>
+        <ul id="display">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#skills">Skills</a></li>
+            <li><a href="index.html#hardware">Hardware Projects</a></li>
+            <li><a href="index.html#software">Software Projects</a></li>
+        </ul>
+        <a href="mailto:h2quan@uwaterloo.ca" class="contact-btn">Contact Me</a>
+    </nav>
+</section>
+
+<header class="project-header">
+    <h1>Chess Clock FSM</h1>
+    <div class="project-meta">SystemVerilog &middot; FSM Design &middot; Edge Detection &middot; Clock Division &middot; FPGA</div>
+    <a href="index.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to Portfolio</a>
+</header>
+
+<div class="project-container">
+
+    <div class="main-content">
+
+        <!-- ====== OVERVIEW ====== -->
+        <h2>Project Overview</h2>
+        <p>I designed a fully synthesizable <strong>two-player chess clock</strong> in SystemVerilog, implemented as a finite state machine (FSM) with edge-detected turn switching, a 1&nbsp;Hz tick generator for real-time countdown, and asynchronous reset. The module cleanly separates next-state logic (combinational) from state storage and datapath updates (sequential), following the standard <strong>two-process FSM pattern</strong> used in production RTL.</p>
+        <p>The design targets an FPGA running at 100&nbsp;MHz and correctly converts that fast clock into a human-readable seconds countdown &mdash; solving the fundamental problem of bridging silicon-speed digital logic with real-world time.</p>
+
+        <div class="result-banner">
+            <div class="icon"><i class="fa-solid fa-chess-clock" style="color:#64ffda"></i></div>
+            <div>
+                <h3>Fully Synthesizable &mdash; Two-Process FSM</h3>
+                <p>4 states &middot; Edge detection &middot; 1&nbsp;Hz tick from 100&nbsp;MHz &middot; Parameterized timer &middot; Asynchronous reset &middot; Zero latches</p>
+            </div>
+        </div>
+
+        <!-- ====== WHAT ARE WE SOLVING ====== -->
+        <h2>What Problem Are We Solving?</h2>
+        <p>A chess clock is deceptively simple: two countdown timers, one button to switch turns. But implementing it in hardware reveals several non-obvious challenges that mirror real-world RTL design problems.</p>
+
+        <div class="ps-grid">
+            <div class="ps-card problem">
+                <h4><i class="fa-solid fa-triangle-exclamation"></i> Problem 1: Button Bounce</h4>
+                <p>A physical button press lasts thousands of clock cycles at 100&nbsp;MHz. Without edge detection, the FSM would oscillate between PLAYER1 and PLAYER2 millions of times per press &mdash; making the clock unusable.</p>
+            </div>
+            <div class="ps-card solution">
+                <h4><i class="fa-solid fa-check-circle"></i> Solution: Rising-Edge Detector</h4>
+                <p>A single flip-flop delays the button signal by one cycle. ANDing the current value with the inverted previous value produces exactly one pulse per press &mdash; clean, deterministic switching.</p>
+            </div>
+        </div>
+
+        <div class="ps-grid">
+            <div class="ps-card problem">
+                <h4><i class="fa-solid fa-triangle-exclamation"></i> Problem 2: Clock Speed vs Human Time</h4>
+                <p>The FPGA clock ticks 100 million times per second. Decrementing the timer every cycle would drain a 60,000-second timer in 0.6&nbsp;ms &mdash; invisible to a human player.</p>
+            </div>
+            <div class="ps-card solution">
+                <h4><i class="fa-solid fa-check-circle"></i> Solution: 1&nbsp;Hz Tick Generator</h4>
+                <p>A 27-bit counter counts from 0 to 99,999,999 and wraps, producing a single-cycle <code>tick</code> pulse every second. The timer only decrements when <code>tick</code> is asserted.</p>
+            </div>
+        </div>
+
+        <div class="ps-grid">
+            <div class="ps-card problem">
+                <h4><i class="fa-solid fa-triangle-exclamation"></i> Problem 3: Multiple Drivers &amp; Latches</h4>
+                <p>Driving the same signal from both an <code>always_ff</code> block and a continuous <code>assign</code> creates synthesis errors. Incomplete case coverage creates unintended latches &mdash; a common beginner bug.</p>
+            </div>
+            <div class="ps-card solution">
+                <h4><i class="fa-solid fa-check-circle"></i> Solution: Strict Two-Process Separation</h4>
+                <p>One <code>always_comb</code> for next-state logic, one <code>always_ff</code> for all sequential updates. Every signal is driven from exactly one block, and defaults at the top of <code>always_comb</code> prevent latches.</p>
+            </div>
+        </div>
+
+        <!-- ====== FSM STATE DIAGRAM ====== -->
+        <h2>FSM State Machine</h2>
+        <p>The clock has four states, encoded in a 2-bit register. The design is intentionally simple &mdash; each state has exactly one responsibility, and transitions are guarded by clear conditions.</p>
+
+        <div class="fsm-diagram">
+            <div class="fsm-states">
+                <div class="fsm-state idle">
+                    IDLE
+                    <small>2'b00</small>
+                </div>
+                <div class="fsm-state p1">
+                    PLAYER1<br>TURN
+                    <small>2'b01</small>
+                </div>
+                <div class="fsm-state p2">
+                    PLAYER2<br>TURN
+                    <small>2'b10</small>
+                </div>
+                <div class="fsm-state over">
+                    GAME<br>OVER
+                    <small>2'b11</small>
+                </div>
+            </div>
+            <div class="fsm-transitions">
+                <strong>Transitions:</strong><br>
+                IDLE &xrarr; PLAYER1_TURN: <code>switch_edge == 1</code> (button pressed)<br>
+                PLAYER1_TURN &xrarr; PLAYER2_TURN: <code>switch_edge == 1</code><br>
+                PLAYER2_TURN &xrarr; PLAYER1_TURN: <code>switch_edge == 1</code><br>
+                PLAYER1_TURN &xrarr; GAMEOVER: <code>player1_time == 0</code><br>
+                PLAYER2_TURN &xrarr; GAMEOVER: <code>player2_time == 0</code><br>
+                GAMEOVER &xrarr; GAMEOVER: <em>latched (only reset escapes)</em>
+            </div>
+        </div>
+
+        <!-- ====== EDGE DETECTION ====== -->
+        <h2>Edge Detection &mdash; How It Works</h2>
+        <p>The edge detector is one of the most useful small circuits in digital design. It converts a <em>level</em> (button held down) into a single-cycle <em>pulse</em> (one clean event).</p>
+
+        <div class="arch-diagram">
+<span class="hl">player_switch</span> ──┬──────────────────────────────────► <span class="hl">AND</span> ──► <span class="hl">switch_edge</span>
+                  <span class="arrow">│</span>                                       <span class="arrow">↑</span>
+                  <span class="arrow">└──►</span> <span class="hl">[D Flip-Flop]</span> ──► <span class="sig">switch_prev</span> ──► <span class="hl">NOT</span> ──┘
+
+<span class="cm">// Hardware: 1 flip-flop + 1 inverter + 1 AND gate</span>
+<span class="cm">// Result:   switch_edge = player_switch &amp; ~switch_prev</span>
+<span class="cm">//           HIGH for exactly ONE clock cycle on rising edge</span>
+        </div>
+
+        <p>The timing table below shows exactly when <code>switch_edge</code> fires:</p>
+
+        <table class="timing-table">
+            <tr>
+                <th>Clock Cycle</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th>
+            </tr>
+            <tr>
+                <td><strong>player_switch</strong></td>
+                <td class="lo">0</td><td class="lo">0</td><td class="hi change">1</td><td class="hi">1</td><td class="hi">1</td><td class="lo change">0</td><td class="lo">0</td><td class="lo">0</td>
+            </tr>
+            <tr>
+                <td><strong>switch_prev</strong></td>
+                <td class="lo">0</td><td class="lo">0</td><td class="lo">0</td><td class="hi change">1</td><td class="hi">1</td><td class="hi">1</td><td class="lo change">0</td><td class="lo">0</td>
+            </tr>
+            <tr>
+                <td><strong>switch_edge</strong></td>
+                <td class="lo">0</td><td class="lo">0</td><td class="hi change">1</td><td class="lo">0</td><td class="lo">0</td><td class="lo">0</td><td class="lo">0</td><td class="lo">0</td>
+            </tr>
+        </table>
+
+        <p>Cycle 3 is the only cycle where <code>player_switch=1</code> AND <code>switch_prev=0</code> &mdash; one clean pulse regardless of how long the button is held.</p>
+
+        <!-- ====== 1-Hz TICK GENERATOR ====== -->
+        <h2>1&nbsp;Hz Tick Generator</h2>
+        <p>The tick generator is a modulo counter that converts the 100&nbsp;MHz FPGA clock into a once-per-second pulse. It counts from 0 to 99,999,999 and wraps, asserting <code>tick</code> for exactly one cycle at the rollover point.</p>
+
+        <div class="code-snippet">
+<span class="cm">// Counter: 27-bit register counts 0 → 99,999,999 → 0 → ...</span>
+<span class="kw">always_comb begin</span>
+    <span class="kw">if</span> (<span class="sig">tick_counter</span> == <span class="num">CLK_FREQ_HZ - 1</span>)
+        <span class="sig">tick_counter_next</span> = <span class="str">'0</span>;          <span class="cm">// wrap to zero</span>
+    <span class="kw">else</span>
+        <span class="sig">tick_counter_next</span> = <span class="sig">tick_counter</span> + <span class="num">1</span>;
+<span class="kw">end</span>
+
+<span class="cm">// tick is HIGH for exactly 1 cycle every 100M cycles (= 1 second)</span>
+<span class="kw">assign</span> <span class="sig">tick</span> = (<span class="sig">tick_counter</span> == <span class="num">CLK_FREQ_HZ - 1</span>);
+        </div>
+
+        <p><strong>Why 27 bits?</strong> <code>$clog2(100,000,000) = 27</code>. You need 27 bits to represent numbers up to 100 million. The parameter <code>CLK_FREQ_HZ</code> makes this portable &mdash; change it to 50,000,000 for a 50&nbsp;MHz board and the tick generator automatically adjusts.</p>
+
+        <!-- ====== MODULE ARCHITECTURE ====== -->
+        <h2>Module Architecture</h2>
+        <p>The design uses the <strong>two-process FSM</strong> pattern &mdash; one combinational block for next-state decisions, one sequential block for all register updates. This is the standard pattern taught in ECE&nbsp;327 and used in industry.</p>
+
+        <div class="arch-diagram">
+<span class="hl">chess_clock</span> module
+<span class="arrow">│</span>
+<span class="arrow">├──</span> <span class="hl">Edge Detector</span>          <span class="dim">(1 FF + AND + NOT)</span>
+<span class="arrow">│     └──</span> player_switch → switch_prev → <span class="hl">switch_edge</span>
+<span class="arrow">│</span>
+<span class="arrow">├──</span> <span class="hl">Tick Generator</span>          <span class="dim">(27-bit counter)</span>
+<span class="arrow">│     └──</span> tick_counter → tick_counter_next → <span class="hl">tick</span>
+<span class="arrow">│</span>
+<span class="arrow">├──</span> <span class="hl">always_comb</span>             <span class="dim">(BLOCK 1: Next-State Logic)</span>
+<span class="arrow">│     └──</span> state + switch_edge + p1_time + p2_time → <span class="hl">state_next</span>
+<span class="arrow">│</span>
+<span class="arrow">└──</span> <span class="hl">always_ff</span>               <span class="dim">(BLOCK 2: State + Datapath)</span>
+      <span class="arrow">├──</span> state      ← state_next
+      <span class="arrow">├──</span> p1_time    ← p1_time - 1  <span class="dim">(when PLAYER1_TURN &amp; tick)</span>
+      <span class="arrow">├──</span> p2_time    ← p2_time - 1  <span class="dim">(when PLAYER2_TURN &amp; tick)</span>
+      <span class="arrow">└──</span> gameover   ← 1            <span class="dim">(when GAMEOVER)</span>
+        </div>
+
+        <!-- ====== KEY CODE WALKTHROUGH ====== -->
+        <h2>Key Code Sections</h2>
+
+        <h3>Next-State Logic (Combinational)</h3>
+        <p>This block computes the next state from the current state and inputs. The default assignment <code>state_next&nbsp;=&nbsp;state</code> at the top prevents latches &mdash; if no condition triggers, the state holds.</p>
+
+        <div class="code-snippet">
+<span class="kw">always_comb begin</span>
+    <span class="sig">state_next</span> = <span class="sig">state</span>;    <span class="cm">// default: hold</span>
+    <span class="kw">case</span> (<span class="sig">state</span>)
+        <span class="type">IDLE</span>: <span class="kw">begin</span>
+            <span class="kw">if</span> (<span class="sig">switch_edge</span>)
+                <span class="sig">state_next</span> = <span class="type">PLAYER1_TURN</span>;
+        <span class="kw">end</span>
+        <span class="type">PLAYER1_TURN</span>: <span class="kw">begin</span>
+            <span class="kw">if</span> (<span class="sig">player1_time</span> == <span class="num">0</span>)
+                <span class="sig">state_next</span> = <span class="type">GAMEOVER</span>;       <span class="cm">// time ran out → highest priority</span>
+            <span class="kw">else if</span> (<span class="sig">switch_edge</span>)
+                <span class="sig">state_next</span> = <span class="type">PLAYER2_TURN</span>;   <span class="cm">// button press → switch turns</span>
+        <span class="kw">end</span>
+        <span class="type">PLAYER2_TURN</span>: <span class="kw">begin</span>
+            <span class="kw">if</span> (<span class="sig">player2_time</span> == <span class="num">0</span>)
+                <span class="sig">state_next</span> = <span class="type">GAMEOVER</span>;
+            <span class="kw">else if</span> (<span class="sig">switch_edge</span>)
+                <span class="sig">state_next</span> = <span class="type">PLAYER1_TURN</span>;
+        <span class="kw">end</span>
+        <span class="type">GAMEOVER</span>: <span class="sig">state_next</span> = <span class="type">GAMEOVER</span>;  <span class="cm">// latched — only rst_n escapes</span>
+    <span class="kw">endcase</span>
+<span class="kw">end</span>
+        </div>
+
+        <h3>Datapath Updates (Sequential)</h3>
+        <p>This block updates all registers on the clock edge. The key insight: <strong>in <code>always_ff</code>, if you don't assign a register, it holds its value.</strong> So during PLAYER1_TURN, <code>player2_time</code> is not assigned and stays frozen &mdash; which is exactly correct.</p>
+
+        <div class="code-snippet">
+<span class="kw">always_ff</span> @(<span class="kw">posedge</span> <span class="sig">clk</span> <span class="kw">or negedge</span> <span class="sig">rst_n</span>) <span class="kw">begin</span>
+    <span class="kw">if</span> (!<span class="sig">rst_n</span>) <span class="kw">begin</span>
+        <span class="sig">state</span>        <= <span class="type">IDLE</span>;
+        <span class="sig">player1_time</span> <= <span class="num">TIMER[15:0]</span>;
+        <span class="sig">player2_time</span> <= <span class="num">TIMER[15:0]</span>;
+        <span class="sig">gameover</span>     <= <span class="num">1'b0</span>;
+    <span class="kw">end else begin</span>
+        <span class="sig">state</span> <= <span class="sig">state_next</span>;
+        <span class="kw">case</span> (<span class="sig">state</span>)
+            <span class="type">IDLE</span>: <span class="kw">begin</span>
+                <span class="sig">player1_time</span> <= <span class="num">TIMER[15:0]</span>;   <span class="cm">// hold at starting time</span>
+                <span class="sig">player2_time</span> <= <span class="num">TIMER[15:0]</span>;
+                <span class="sig">gameover</span>     <= <span class="num">1'b0</span>;
+            <span class="kw">end</span>
+            <span class="type">PLAYER1_TURN</span>: <span class="kw">begin</span>
+                <span class="kw">if</span> (<span class="sig">tick</span> && <span class="sig">player1_time</span> > <span class="num">0</span>)
+                    <span class="sig">player1_time</span> <= <span class="sig">player1_time</span> - <span class="num">1</span>;
+                <span class="cm">// player2_time not assigned → holds value automatically</span>
+            <span class="kw">end</span>
+            <span class="type">PLAYER2_TURN</span>: <span class="kw">begin</span>
+                <span class="kw">if</span> (<span class="sig">tick</span> && <span class="sig">player2_time</span> > <span class="num">0</span>)
+                    <span class="sig">player2_time</span> <= <span class="sig">player2_time</span> - <span class="num">1</span>;
+            <span class="kw">end</span>
+            <span class="type">GAMEOVER</span>: <span class="sig">gameover</span> <= <span class="num">1'b1</span>;
+        <span class="kw">endcase</span>
+    <span class="kw">end</span>
+<span class="kw">end</span>
+        </div>
+
+        <!-- ====== HARDWARE DIAGRAM ====== -->
+        <h2>What the Hardware Looks Like</h2>
+        <p>Every line of SystemVerilog maps to real gates, flip-flops, and comparators. The entire design synthesizes to roughly:</p>
+
+        <table class="layer-table">
+            <tr><th>Component</th><th>Count</th><th>Purpose</th></tr>
+            <tr><td>D Flip-Flops</td><td>~63</td><td>2-bit state + 16-bit p1_time + 16-bit p2_time + 27-bit tick_counter + 1-bit switch_prev + 1-bit gameover</td></tr>
+            <tr><td>27-bit Adder</td><td>1</td><td>tick_counter + 1</td></tr>
+            <tr><td>27-bit Comparator</td><td>1</td><td>tick_counter == CLK_FREQ_HZ - 1</td></tr>
+            <tr><td>16-bit Subtractors</td><td>2</td><td>player1_time - 1, player2_time - 1</td></tr>
+            <tr><td>16-bit Comparators</td><td>2</td><td>player1_time == 0, player2_time == 0</td></tr>
+            <tr><td>AND + NOT</td><td>1 each</td><td>Edge detector</td></tr>
+            <tr><td>MUXes</td><td>several</td><td>State-dependent register selection</td></tr>
+        </table>
+
+        <!-- ====== CONCEPTS LEARNED ====== -->
+        <h2>Key Concepts &amp; Takeaways</h2>
+
+        <div class="qa-item">
+            <div class="q">Two-Process FSM Pattern</div>
+            <div class="a">Separate next-state logic (combinational) from state storage (sequential). This eliminates common bugs: latches from incomplete combinational coverage, multiple drivers, and mixing blocking/non-blocking assignments. It's the standard pattern in production RTL.</div>
+        </div>
+
+        <div class="qa-item">
+            <div class="q">Edge Detection vs Level Detection</div>
+            <div class="a">Level detection (checking if a signal IS high) causes repeated triggers every clock cycle. Edge detection (checking if a signal BECAME high) produces exactly one pulse per event. The pattern — one flip-flop to delay, AND with inverted previous — is reusable everywhere: buttons, interrupt lines, handshake signals.</div>
+        </div>
+
+        <div class="qa-item">
+            <div class="q">Clock Division Without a PLL</div>
+            <div class="a">A simple modulo counter converts any clock frequency to any slower frequency. Count to N-1, then wrap. Assert a tick pulse at the wrap point. This avoids needing a PLL or clock management tile for simple timing applications.</div>
+        </div>
+
+        <div class="qa-item">
+            <div class="q">Implicit Hold in <code>always_ff</code></div>
+            <div class="a">In sequential blocks, an unassigned register retains its value — flip-flops hold by default. This is the opposite of <code>always_comb</code> where every signal must be assigned in every path (or latches are inferred). Understanding this distinction prevents one of the most common RTL bugs.</div>
+        </div>
+
+        <div class="qa-item">
+            <div class="q">Parameterization for Portability</div>
+            <div class="a"><code>TIMER</code> and <code>CLK_FREQ_HZ</code> as parameters mean the module works on any board at any clock frequency without changing a single line of RTL. This is the same approach used in industrial IP cores that ship to hundreds of different customers.</div>
+        </div>
+
+    </div><!-- end main-content -->
+
+    <div class="sidebar">
+        <h3>Technologies</h3>
+        <ul>
+            <li><i class="fa-solid fa-microchip"></i> SystemVerilog</li>
+            <li><i class="fa-solid fa-layer-group"></i> FSM Design</li>
+            <li><i class="fa-solid fa-wave-square"></i> Edge Detection</li>
+            <li><i class="fa-solid fa-clock"></i> Clock Division</li>
+            <li><i class="fa-solid fa-chess"></i> FPGA Synthesis</li>
+        </ul>
+
+        <h3>Design Features</h3>
+        <ul>
+            <li><i class="fa-solid fa-circle"></i> Two-process FSM pattern</li>
+            <li><i class="fa-solid fa-circle"></i> Rising-edge detector</li>
+            <li><i class="fa-solid fa-circle"></i> 1 Hz tick generator</li>
+            <li><i class="fa-solid fa-circle"></i> Parameterized timer</li>
+            <li><i class="fa-solid fa-circle"></i> Async active-low reset</li>
+            <li><i class="fa-solid fa-circle"></i> Zero latches</li>
+            <li><i class="fa-solid fa-circle"></i> Single-driver per signal</li>
+        </ul>
+
+        <h3>Module Interface</h3>
+        <ul>
+            <li><i class="fa-solid fa-right-to-bracket"></i> clk (100 MHz)</li>
+            <li><i class="fa-solid fa-right-to-bracket"></i> rst_n (async low)</li>
+            <li><i class="fa-solid fa-right-to-bracket"></i> player_switch</li>
+            <li><i class="fa-solid fa-right-from-bracket"></i> player1_time [15:0]</li>
+            <li><i class="fa-solid fa-right-from-bracket"></i> player2_time [15:0]</li>
+            <li><i class="fa-solid fa-right-from-bracket"></i> gameover</li>
+        </ul>
+
+        <h3>Hardware Cost</h3>
+        <ul>
+            <li><i class="fa-solid fa-circle"></i> ~63 flip-flops</li>
+            <li><i class="fa-solid fa-circle"></i> 1 adder (27-bit)</li>
+            <li><i class="fa-solid fa-circle"></i> 2 subtractors (16-bit)</li>
+            <li><i class="fa-solid fa-circle"></i> 3 comparators</li>
+            <li><i class="fa-solid fa-circle"></i> Minimal LUT usage</li>
+        </ul>
+    </div>
+
+</div><!-- end project-container -->
+
+<footer>
+    <div class="logo" style="justify-content:center;margin-bottom:20px;">
+        <span>Hugo Quan</span>
+    </div>
+    <div class="footer-socials">
+        <a href="https://github.com/TheRealHugoQuan"><i class="fa-brands fa-github"></i></a>
+        <a href="https://www.linkedin.com/in/hugoquan21015604/"><i class="fa-brands fa-linkedin"></i></a>
+        <a href="mailto:h2quan@uwaterloo.ca"><i class="fa-solid fa-envelope"></i></a>
+    </div>
+    <p>&copy; 2026 Hugo Quan. Designed for Engineering Excellence.</p>
+</footer>
+
+</body>
+</html>
